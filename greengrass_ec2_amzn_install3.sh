@@ -32,8 +32,11 @@ sudo cd /
 sudo mkdir /Tmp
 cd /greengrass/certs/ 
 sudo wget -O root.ca.pem http://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem
-# cd /greengrass/ggc/core/ 
-# sudo ./greengrassd start
-# cd ${homeDir}
-# python createGGCoreGroup.py >& $homeDir/outputlog.txt
+cd ${homeDir}
+python createGGCoreGroup.py >& $homeDir/outputlog.txt
+sudo cp config.json /greengrass/config/config.json
+sudo cp iot-pem-crt /greengrass/certs/iot-pem-crt
+sudo cp iot-pem-key /greengrass/certs/iot-pem-key
+cd /greengrass/ggc/core/ 
+sudo ./greengrassd start
 

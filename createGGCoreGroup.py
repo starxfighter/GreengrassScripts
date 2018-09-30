@@ -59,8 +59,22 @@ core_definition = gg.create_core_definition(
     Name="{0}_core_def".format(group['Name']),
     InitialVersion=initial_version)
 
+# core_ver = gg.create_core_definition_version(
+#     AmznClientToken='string',
+#     CoreDefinitionId='string',
+#     Cores=[
+#         {
+#             'CertificateArn': keys_cert['certificateArn'],
+#             'Id': core_thing['thingId'],
+#             'SyncShadow': True,
+#             'ThingArn': core_thing['thingArn']
+#         }
+#     ]
+# )
+
 group_ver = gg.create_group_version(
     GroupId=group['Id'],
+    # CoreDefinitionVersionArn=core_ver['Arn']
     CoreDefinitionVersionArn=core_definition['LatestVersionArn']
 )
 
@@ -77,3 +91,32 @@ state = {
     
 with open('./state.json', 'w') as f:
     json.dump(state, f, indent=4)
+
+tempIoTHost = 'a1uto1ic4nrwqv.iot.' + region_name + '.amazonaws.com'
+tempGGHost = 'greengrass.iot.' + region_name + '.amazonaws.com'
+
+with open('./iot-pem-crt', 'w') as f:
+    f.write(keys_cert['certificatePem'])
+
+with open('./iot-pem-key', 'w') as f:
+    f.write(keys_cert['keyPair']['PrivateKey'])
+
+config = {
+    "coreThing": {
+        "caPath": "root.ca.pem",
+        "certPath": "iot-pem-crt",
+        "keyPath": "iot-pem-key",
+        "thingArn": core_thing['thingArn'],
+        "iotHost": tempIoTHost,
+        "ggHost": tempGGHost,
+        "keepAlive" : 600
+    },
+    "runtime": {
+        "cgroup": {
+            "useSystemd": "yes"
+        }
+    },
+    "managedRespawn": False
+}
+with open('./config.json', 'w') as f:
+    json.dump(config, f, indent=4)
