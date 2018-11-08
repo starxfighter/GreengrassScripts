@@ -1,0 +1,11 @@
+{
+    "region" : "us-east-1",
+    "datastoreName" : "AAAdatastore",
+    "tagkey" : "AAAaccount",
+    "tagvalue" : "AAAtest",
+    "channelName" : "AAAchannel",
+    "pipelineName" : "AAApipeline",
+    "datasetName" : "AAAdataset",
+    "ruleName" : "AAAruleName",
+    "msgTopic" : "aaa/test"
+}
