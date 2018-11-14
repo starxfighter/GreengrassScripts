@@ -1,11 +1,11 @@
 {
     "region" : "us-east-1",
-    "datastoreName" : "AAAdatastore",
-    "tagkey" : "AAAaccount",
-    "tagvalue" : "AAAtest",
-    "channelName" : "AAAchannel",
-    "pipelineName" : "AAApipeline",
-    "datasetName" : "AAAdataset",
-    "ruleName" : "AAAruleName",
-    "msgTopic" : "aaa/test"
+    "datastoreName" : "BBBdatastore",
+    "tagkey" : "BBBaccount",
+    "tagvalue" : "BBBtest",
+    "channelName" : "BBBchannel",
+    "pipelineName" : "BBBpipeline",
+    "datasetName" : "BBBdataset",
+    "ruleName" : "BBBruleName",
+    "msgTopic" : "BBB/test"
 }

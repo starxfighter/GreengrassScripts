@@ -1,0 +1,17 @@
+{
+    "region" : "us-east-1",
+    "lambdaFunName": "Testlambda",
+    "lambdaIdName": "TestLambda",
+    "lambdaARN": "arn:aws:lambda:us-east-1:123940773876:function:corelambda1",
+    "lambdaAlias": "corelambda4",
+    "lambdaLongLived": "True",
+    "lambdaMemSize": 524288,
+    "lambdaTimeout": 600,
+    "subscriptionName": "BBB_subscription",
+    "subscriptionSubject": "BBB/test",
+    "subscriptionIdName": "BBB_IoT_Sub",
+    "LocResGroupName": "BBB_Local_Resource",
+    "LocResName": "BBB_Temp",
+    "sourcePath": "/tmp",
+    "destinationPath": "/tmp"
+}

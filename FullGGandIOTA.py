@@ -326,37 +326,53 @@ def createIoTA():
         #         }
         #     ]
         # }
-        rolePolicy = {
-            "Version":"2012-10-17",
-            "Statement":[
-                {"Effect":"Allow",
-                "Principal":{"Service":["iotanalytics.amazonaws.com"]},
-                "Action":["sts:AssumeRole"]}]    
-        }
-        print("rolepolicy", rolePolicy)
-        role = iam.create_role(
-            RoleName="AutoGGIoTA",
-            AssumeRolePolicyDocument = json.dumps(rolePolicy),
-            Description = "Auto generated role"
-        )
-        print("role: {}".format(role))
-        # print("ruleArn", role['Role']['Arn'])
-        mypolicy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Action": "iotanalytics:BatchPutMessage",
-                    "Resource": channel['channelArn']
-                }
-             ]
-        }
-        assign = iam.put_role_policy(
-            RoleName="AutoGGIoTA",
-            PolicyName="AutoProvisionGGIoTA",
-            PolicyDocument= json.dumps(mypolicy)
-        )
-        print("assign: {}".format(assign))
+        # rolecheck = iam.get_role(
+        #     RoleName = "XAutoGGIoTA"
+        # )
+        # print("Rolecheck: {}".format(rolecheck))
+        try:
+            rolecheck2 = iam.get_role(
+                RoleName = "XAutoGGIoTA"
+            )
+            print("Rolecheck: {}".format(rolecheck2))
+            IoTARole = rolecheck2['Role']['Arn']
+            role = "used existing role"
+            assign = "used existing role"
+        except:
+            print("Error role is not found")
+            rolePolicy = {
+                "Version":"2012-10-17",
+                "Statement":[
+                    {"Effect":"Allow",
+                    "Principal":{"Service":["iotanalytics.amazonaws.com"]},
+                    "Action":["sts:AssumeRole"]}]    
+            }
+            print("rolepolicy", rolePolicy)
+            role = iam.create_role(
+                RoleName="XAutoGGIoTA",
+                AssumeRolePolicyDocument = json.dumps(rolePolicy),
+                Description = "Auto generated role"
+            )
+            print("role: {}".format(role))
+            # print("ruleArn", role['Role']['Arn'])
+            mypolicy = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": "iotanalytics:BatchPutMessage",
+                        "Resource": channel['channelArn']
+                    }
+                ]
+            }
+            assign = iam.put_role_policy(
+                RoleName="XAutoGGIoTA",
+                PolicyName="XAutoProvisionGGIoTA",
+                PolicyDocument= json.dumps(mypolicy)
+            )
+            print("assign: {}".format(assign))
+            IoTARole = role['Role']['Arn']
+
         sql2 = "SELECT * FROM '" + IoTAConfig['msgTopic'] + "'"
         print('sql', sql2)
         # print("ruleArn", role['Arn'])
@@ -368,7 +384,8 @@ def createIoTA():
                         'iotAnalytics': {
                             'channelArn': channel['channelArn'],
                             'channelName': channel['channelName'],
-                            'roleArn': role['Role']['Arn']
+                            'roleArn': IoTARole
+                            # 'roleArn': role['Role']['Arn']
                         },
                     },
                 ],
@@ -381,6 +398,17 @@ def createIoTA():
             topicRulePayload= rulePayLoad
         )
         print("IoTARule: {}". format(IoTARule))
+        iotstate = {
+                'datastore': ds,
+                'channel': channel,
+                'pipeline': pipeline,
+                'dataset': dataset,
+                'trustpolicy': role,
+                'policy': assign,
+                'IoT Rule': IoTARule
+        }
+        with open('./iotstate.json', 'w') as x:
+            json.dump(iotstate, x, indent=4)
 
 # ************************************
 # Beginning of the Main flow
@@ -457,34 +485,34 @@ if exists:
 
         # SAVE created entities to the file.
         # You'll thank me for that when it's time to clean things up.
-        if tempLoRes:
-            state = {
-                'group': group,
-                'core_thing': core_thing,
-                'keys_cert': keys_cert,
-                'group_ver': group_ver,
-                'core_definition': core_definition,
-                'policy': policy,
-                'localresource': localresource,
-                'lambda': gglambda,
-                'subscription': subscription,
-                'Config Update': updateconfig
-            }
-        else:
-             state = {
-                'group': group,
-                'core_thing': core_thing,
-                'keys_cert': keys_cert,
-                'group_ver': group_ver,
-                'core_definition': core_definition,
-                'policy': policy,
-                'lambda': gglambda,
-                'subscription': subscription,
-                'Config Update': updateconfig
-            }    
+        # if tempLoRes:
+        #     state = {
+        #         'group': group,
+        #         'core_thing': core_thing,
+        #         'keys_cert': keys_cert,
+        #         'group_ver': group_ver,
+        #         'core_definition': core_definition,
+        #         'policy': policy,
+        #         'localresource': localresource,
+        #         'lambda': gglambda,
+        #         'subscription': subscription,
+        #         'Config Update': updateconfig
+        #     }
+        # else:
+        #      state = {
+        #         'group': group,
+        #         'core_thing': core_thing,
+        #         'keys_cert': keys_cert,
+        #         'group_ver': group_ver,
+        #         'core_definition': core_definition,
+        #         'policy': policy,
+        #         'lambda': gglambda,
+        #         'subscription': subscription,
+        #         'Config Update': updateconfig
+        #     }    
     
-        with open('./state.json', 'w') as f:
-            json.dump(state, f, indent=4)
+        # with open('./state.json', 'w') as f:
+        #     json.dump(state, f, indent=4)
 
         tempIoTHost = 'a1uto1ic4nrwqv.iot.' + region_name + '.amazonaws.com'
         tempGGHost = 'greengrass.iot.' + region_name + '.amazonaws.com'
@@ -521,6 +549,36 @@ if exists:
             GroupVersionId=group_ver['Version']
         )
         print("Deployment Information", deployResp)
+        if tempLoRes:
+            state = {
+                'group': group,
+                'core_thing': core_thing,
+                'keys_cert': keys_cert,
+                'group_ver': group_ver,
+                'core_definition': core_definition,
+                'policy': policy,
+                'localresource': localresource,
+                'lambda': gglambda,
+                'subscription': subscription,
+                'Config Update': updateconfig,
+                'deployment': deployResp
+            }
+        else:
+             state = {
+                'group': group,
+                'core_thing': core_thing,
+                'keys_cert': keys_cert,
+                'group_ver': group_ver,
+                'core_definition': core_definition,
+                'policy': policy,
+                'lambda': gglambda,
+                'subscription': subscription,
+                'Config Update': updateconfig,
+                'deployment': deployResp
+            }    
+        with open('./state.json', 'w') as f:
+            json.dump(state, f, indent=4)
+
         # Create IoT Analytics Components
         createIoTA()
     else:
