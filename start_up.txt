@@ -1,0 +1,11 @@
+#!/bin/bash
+yum update -y
+cd /home/ec2-user/
+yum -y install git
+yum -y install python-pip
+pip install awscli --upgrade
+pip install pandas
+pip install boto3
+wget https://s3.amazonaws.com/ggtestfiles/ec2_greengrass_iota_install.sh -O greengrass_ec2_amzn_install.sh
+chmod 755 greengrass_ec2_amzn_install.sh
+./greengrass_ec2_amzn_install.sh
